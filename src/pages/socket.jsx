@@ -21,15 +21,21 @@ export default function Socket() {
       socket.connect();
       socket.emit("join_room", roomID);
     },
+    onError: () => {
+      console.log("Error");
+    },
+    retry: 0,
+    refetchOnWindowFocus: false,
   });
 
-  useEffect(() => {
-    console.log("mount");
-    return console.log("dismount");
-  }, []);
-
   const sendMessage = () => {
-    socket.emit("send_message", { message: `hello socket from ${roomID}` });
+    try {
+      if (!socket.connected) throw new Error("Socket not connected");
+
+      socket.emit("send_message", { message: `hello socket from ${roomID}` });
+    } catch (e) {
+      console.log(e.message);
+    }
   };
 
   return (
