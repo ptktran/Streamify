@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useSessionStore } from "../../utils/store";
 
 export default function LobbyForm({ handleCreate, handleStart }) {
+  const { SetName } = useSessionStore();
   const [username, setUsername] = useState("");
   const [avatarLink, setAvatarLink] = useState("");
   const [link, setLink] = useState("");
@@ -9,6 +11,7 @@ export default function LobbyForm({ handleCreate, handleStart }) {
   const createRoom = () => {
     try {
       if (!username) throw new Error("No username");
+      SetName(username);
       handleCreate();
     } catch (e) {
       setError(e.message);
@@ -17,8 +20,8 @@ export default function LobbyForm({ handleCreate, handleStart }) {
 
   const startParty = () => {
     try {
-      console.log(!username || !link);
       if (!username || !link) throw new Error("No link or username provided");
+      SetName(username);
       handleStart(link);
     } catch (e) {
       setError(e.message);
