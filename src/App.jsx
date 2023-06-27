@@ -1,12 +1,15 @@
-import Home from './components/Home/Home'
+import { QueryClient, QueryClientProvider } from "react-query";
+import { BrowserRouter } from "react-router-dom";
+import Router from "./routes";
 
 function App() {
-
   return (
-    <>
-      <Home />
-    </>
-  )
+    <QueryClientProvider client={new QueryClient()}>
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
 }
 
-export default App
+export default App;
