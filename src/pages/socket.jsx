@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSessionStore } from "../utils/store";
+import ChatBox from '../components/ChatBox/ChatBox'
 
 const socket = io("http://localhost:3001", {
   transports: ["websocket", "polling"],
@@ -14,7 +15,6 @@ export default function Socket() {
   const { roomID } = useParams();
   const { Name } = useSessionStore();
   const [chat, setChat] = useState();
-  const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const { isLoading } = useQuery({
     queryFn: async () => {
@@ -48,7 +48,7 @@ export default function Socket() {
     };
   }, []);
 
-  const sendMessage = () => {
+  const sendMessage = (message) => {
     try {
       if (!socket.connected) throw new Error("Socket not connected");
 
@@ -56,35 +56,35 @@ export default function Socket() {
         roomID,
         message,
       });
-      setMessage("");
     } catch (e) {
       console.log(e.message);
     }
   };
 
-  const renderChat = () => {
-    if (!chat) return;
+  // const renderChat = () => {
+  //   if (!chat) return;
 
-    return chat.map((value, index) => (
-      <p key={index}>
-        {value.sender} : {value.message}
-      </p>
-    ));
-  };
+  //   return chat.map((value, index) => (
+  //     <p key={index}>
+  //       {value.sender} : {value.message}
+  //     </p>
+  //   ));
+  // };
 
   return (
-    <div className="flex justify-center items-center">
-      <h1>Currently in room {roomID}</h1>
-      <input
-        className="bg-gray-comps text-white"
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button className="bg-red-main text-gray-text" onClick={sendMessage}>
-        Say hello to socket
-      </button>
-      <div>{renderChat()}</div>
-    </div>
+    <ChatBox chat={chat} sendMessage={sendMessage} sender={name}/>
+    // <div className="flex justify-center items-center">
+    //   <h1>Currently in room {roomID}</h1>
+    //   <input
+    //     className="bg-gray-comps text-white"
+    //     type="text"
+    //     value={message}
+    //     onChange={(e) => setMessage(e.target.value)}
+    //   />
+    //   <button className="bg-red-main text-gray-text" onClick={sendMessage}>
+    //     Say hello to socket
+    //   </button>
+    //   <div>{renderChat()}</div>
+    // </div>
   );
 }

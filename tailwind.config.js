@@ -23,5 +23,7 @@ module.exports = {
       sans: ['Inter', 'Helvetica', 'sans-serif']
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
 };

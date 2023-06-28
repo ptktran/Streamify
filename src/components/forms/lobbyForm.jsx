@@ -35,43 +35,52 @@ export default function LobbyForm({ handleCreate, handleStart }) {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Username"
-        className="bg-gray-dark py-1 w-full rounded pl-2 outline-none placeholder:opacity-50 font-normal text-white"
+        className="bg-gray-dark py-1.5 w-full rounded-lg pl-2.5 outline-none placeholder:opacity-50 font-normal text-white ease duration-150 focus:border-gray-bg border border-gray-dark"
       />
       <input
         type="text"
         value={avatarLink}
         onChange={(e) => setAvatarLink(e.target.value)}
         placeholder="Avatar link (optional)"
-        className="bg-gray-dark py-1 w-full rounded pl-2 outline-none placeholder:opacity-50 font-normal text-white"
+        className="bg-gray-dark py-1.5 w-full rounded-lg pl-2.5 outline-none placeholder:opacity-50 font-normal text-white ease duration-150 focus:border-gray-bg border border-gray-dark"
       />
-      <div className="grid grid-cols-8 gap-3">
-        <input
-          type="text"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-          placeholder="Party Link"
-          className="col-span-5 bg-gray-dark py-1 w-full rounded pl-2 outline-none placeholder:opacity-50 font-normal text-white"
-        />
-        <p className="col-span-1 text-gray-text text-center py-1">or</p>
-        <button
-          onClick={createRoom}
-          className="col-span-2 text-white bg-red-main rounded text-sm font-light"
-        >
-          Create room
-        </button>
-      </div>
+      <input
+        type="text"
+        value={link}
+        onChange={(e) => setLink(e.target.value)}
+        placeholder="Party Link"
+        className="bg-gray-dark py-1.5 w-full rounded-lg pl-2.5 outline-none placeholder:opacity-50 font-normal text-white ease duration-150 focus:border-gray-bg border border-gray-dark"
+      />
       <div className="flex justify-center gap-2">
-        <p className="text-sm text-gray-text font-light">
+        <p className="text-gray-text font-light">
           Only I can control party actions
         </p>
         <input type="checkbox" />
       </div>
-      <div className="flex justify-center space-y-3">
+      <div className="flex justify-center items-center gap-x-5">
+        {(link) ? (
+          <button
+            onClick={startParty}
+            className="px-3 py-2 font-light bg-red-main ease duration-150 hover:bg-red-main/80 hover:border-red-main/80 rounded-lg text-white"
+          >
+            Join party
+          </button>
+        ) : (
+          <button
+            disabled
+            className="px-3 py-2 font-light bg-gray-bg rounded-lg text-gray-text"
+          >
+            Join party
+          </button>
+        )}
+
+        <p className="text-gray-text">or</p>
+
         <button
-          onClick={startParty}
-          className="bg-red-main rounded text-white py-2 px-3 font-light text-sm"
+          onClick={createRoom}
+          className="px-3 py-2 text-white font-light rounded-lg bg-red-main ease duration-150 hover:bg-red-main/80 hover:border-red-main/80"
         >
-          Start the Party
+          Create room
         </button>
       </div>
       {error ? (

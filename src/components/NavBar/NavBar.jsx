@@ -1,23 +1,59 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Link }  from 'react-router-dom'
+import copy from '../../assets/copy.svg'
+import { toast } from 'react-toastify';
+import copiedSymbol from '../../assets/copied.svg'
 
 export default function NavBar() {
+  const roomUrl = window.location.pathname.slice(6)
+  const [ copied, setCopied ] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(roomUrl);
+    toast('Copied to clipboard');
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
+  }
+
   return (
     <>
       <div className="w-full bg-gray-comps flex justify-between items-center py-3 px-6 rounded-xl">
         <div>
-          <h1 className="font-semibold text-white text-xl">📺 Streamify</h1>
+          <h1 className="text-white text-xl">📺 Streamify</h1>
         </div>
 
-        <div className='flex items-center'>
-          <input 
-            className="bg-gray-dark text-sm border border-gray-bg text-gray-text rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 w-48 p-2 focus:outline-none"
-            type="text"
-            value='streamify.net/rOoMiD'
-            readOnly
-          />
-          <button type="submit" className="bg-gray-bg p-1 border border-gray-bg rounded-lg rounded-s-none ease duration-150 hover:bg-gray-bg/80 hover:border-gray-bg/80">
-            <img src='src/assets/copy.svg' className='w-7'></img>
-          </button>
+        <div className='flex items-center gap-2'>
+          <div className="flex items-center">
+            <input 
+              className="bg-gray-dark text-sm border border-gray-bg text-gray-text rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 w-48 p-2 focus:outline-none"
+              type="text"
+              id="roomUrl"
+              value={roomUrl}
+              readOnly
+            />
+            <button 
+              type="submit" 
+              onClick={handleCopy}
+              className="bg-gray-bg hover:bg-gray-bg/80 border border-gray-bg p-1 rounded-lg rounded-s-none ease duration-150"
+            >
+              {copied ? (
+                <img src={copiedSymbol} className="w-7" alt="copied" />
+              ) : (
+                <img src={copy} className="w-7" alt="copy" />
+              )}
+            </button>
+          </div>
+
+          <div>
+            <Link to="/Lobby">
+              <button type="submit" className="bg-red-main px-2.5 py-1.5 text-sm border border-red-main text-white rounded-lg duration-150 hover:bg-red-main/80 hover:border-red-main/80">
+                Leave room
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </>

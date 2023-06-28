@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import ReactPlayer from 'react-player'
-import YouTube from 'react-player/youtube'
+import ReactPlayer from 'react-player/youtube'
+import youtubeSymbol from '../../assets/youtube2.svg'
 
 export default function VideoBox() {
   const [url, setUrl] = useState('')
@@ -100,14 +100,14 @@ export default function VideoBox() {
           </>
         ) : (
           <>
-            <img src="src/assets/youtube2.svg" className="w-36 opacity-60"></img>
+            <img src={youtubeSymbol} className="w-36 opacity-60"></img>
             <h1 className="text-gray-text text-lg mb-2.5">Paste a Youtube link to start watching now!</h1>
             <form onSubmit={handleSubmit}>
               
               {error ? (
                 <>
                 <input 
-                  className="bg-gray-dark border border-red-main text-gray-text rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-text w-[26rem] p-2.5 focus:outline-none"
+                  className="bg-gray-dark border border-red-main text-gray-text rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-bg w-[26rem] p-2.5 focus:outline-none"
                   placeholder="Link here..."
                   type="text"
                   value={url}
@@ -119,7 +119,7 @@ export default function VideoBox() {
               ) : (
                 <>
                   <input 
-                    className="bg-gray-dark border border-gray-dark text-gray-text rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-text w-[26rem] p-2.5 focus:outline-none"
+                    className="bg-gray-dark border border-gray-dark text-gray-text rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-bg w-[26rem] p-2.5 focus:outline-none"
                     placeholder="Link here..."
                     type="text"
                     value={url}
