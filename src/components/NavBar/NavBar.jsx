@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Link }  from 'react-router-dom'
+import 'react-tooltip/dist/react-tooltip.css'
+import { Tooltip } from 'react-tooltip'
 import copy from '../../assets/copy.svg'
-import { toast } from 'react-toastify';
 import copiedSymbol from '../../assets/copied.svg'
 
 export default function NavBar() {
@@ -10,9 +11,7 @@ export default function NavBar() {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(roomUrl);
-    toast('Copied to clipboard');
     setCopied(true);
-
     setTimeout(() => {
       setCopied(false);
     }, 3000);
@@ -37,19 +36,37 @@ export default function NavBar() {
             <button 
               type="submit" 
               onClick={handleCopy}
-              className="bg-gray-bg hover:bg-gray-bg/80 border border-gray-bg p-1 rounded-lg rounded-s-none ease duration-150"
+              className="bg-gray-bg hover:bg-gray-bg/80 border border-gray-bg p-1 rounded-lg rounded-s-none ease duration-150 copyButton"
             >
               {copied ? (
-                <img src={copiedSymbol} className="w-7" alt="copied" />
+                <>
+                  <img src={copiedSymbol} className="w-7" alt="copied" />
+                  <Tooltip
+                    anchorSelect='.copyButton'
+                    place="bottom"
+                    style={{ backgroundColor: "#181818", color: "#A6A6A6" }}
+                  >
+                    room ID copied!
+                  </Tooltip>
+                </>
               ) : (
-                <img src={copy} className="w-7" alt="copy" />
+                <>
+                  <img src={copy} className="w-7" alt="copy" />
+                  <Tooltip
+                    anchorSelect='.copyButton'
+                    place="bottom"
+                    style={{ backgroundColor: "#181818", color: "#A6A6A6" }}
+                  >
+                    copy room ID
+                  </Tooltip>
+                </>
               )}
             </button>
           </div>
 
           <div>
             <Link to="/Lobby">
-              <button type="submit" className="bg-red-main px-2.5 py-1.5 text-sm border border-red-main text-white rounded-lg duration-150 hover:bg-red-main/80 hover:border-red-main/80">
+              <button type="submit" className="bg-red-main px-2.5 py-2 text-sm border border-red-main text-white rounded-lg duration-150 hover:bg-red-main/80 hover:border-red-main/80">
                 Leave room
               </button>
             </Link>

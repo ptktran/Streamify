@@ -13,6 +13,14 @@ export default function ChatBox({ chat, sendMessage, sender }) {
     setMessage('')
   }
 
+  // const messageIsLink = (message) => {
+  //   if (message.slice(0, 5) === 'https') {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
+
   useEffect(() => {
     scroller.current.scrollIntoView({ behavior: 'smooth' });
   }, [chat]);
@@ -38,15 +46,20 @@ export default function ChatBox({ chat, sendMessage, sender }) {
                 <div key={index}>
                   {value.sender === sender ? (
                     <div className="w-full flex items-end flex-col text-left mb-3 gap-y-1">
-                      <p className="text-white font-semibold text-xs">{value.sender}</p>
-                      <div className="text-base rounded-xl bg-gray-bg text-gray-text max-w-[80%] py-2 px-3 break-words">
+                      <p className="text-gray-text font-semibold text-xs">{value.sender}</p>
+                      <div className="text-sm rounded-2xl rounded-tr-none bg-gray-bg text-white max-w-[80%] py-2 px-3 break-words">
+                        {/* {messageIsLink(value.message) ? (
+                          <img src={value.message}></img>
+                        ) : (
+                          <p>{value.message}</p>
+                        )} */}
                         {value.message}
                       </div>
                     </div>
                   ) : (
                     <div className="w-full flex items-start flex-col text-left mb-3 gap-y-1">
-                      <p className="text-white font-semibold text-xs">{value.sender}</p>
-                      <div className="text-base rounded-xl bg-gray-bg text-gray-text max-w-[80%] py-2 px-3 break-words">
+                      <p className="text-gray-text font-semibold text-xs">{value.sender}</p>
+                      <div className="text-sm rounded-2xl rounded-tl-none bg-gray-bg text-white max-w-[80%] py-2 px-3 break-words">
                         {value.message}
                       </div>
                     </div>
@@ -61,7 +74,7 @@ export default function ChatBox({ chat, sendMessage, sender }) {
           <div className="flex items-center m-auto w-full">  
             <form onSubmit={handleSendMessage} className='w-full flex justify-between'>
               <input 
-                className="w-full bg-gray-dark border border-gray-dark text-gray-text text-sm rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-bg p-3 focus:outline-none"
+                className="w-full bg-gray-dark border border-gray-dark text-white text-sm rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-bg p-3 focus:outline-none"
                 placeholder="Send a chat"
                 type="text"
                 value={message}
