@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { motion } from 'framer-motion'
 
 export default function ChatBox({ chat, sendMessage, sender }) {
   const [ message, setMessage ] = useState('')
@@ -43,6 +44,11 @@ export default function ChatBox({ chat, sendMessage, sender }) {
           <div className="text-sm text-gray-text p-5">
             {chat &&
               chat.map((value, index) => (
+                <motion.div
+                  initial={{ y: 5, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.15 }}
+                >
                 <div key={index}>
                   {value.sender === sender ? (
                     <div className="w-full flex items-end flex-col text-left mb-3 gap-y-1">
@@ -65,6 +71,7 @@ export default function ChatBox({ chat, sendMessage, sender }) {
                     </div>
                   )}
                 </div>
+                </motion.div>
               ))}
               <div ref={scroller}></div>
           </div>
@@ -74,7 +81,7 @@ export default function ChatBox({ chat, sendMessage, sender }) {
           <div className="flex items-center m-auto w-full">  
             <form onSubmit={handleSendMessage} className='w-full flex justify-between'>
               <input 
-                className="w-full bg-gray-dark border border-gray-dark text-white text-sm rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-bg p-3 focus:outline-none"
+                className="w-full bg-gray-dark border border-gray-dark text-white placeholder:text-gray-text text-sm rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-bg p-3 focus:outline-none"
                 placeholder="Send a chat"
                 type="text"
                 value={message}

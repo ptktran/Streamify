@@ -4,11 +4,14 @@ import Router from "./routes";
 
 function App() {
   return (
-    <QueryClientProvider client={new QueryClient()}>
-      <BrowserRouter>
-        <Router />
-      </BrowserRouter>
-    </QueryClientProvider>
+    <>
+      <QueryClientProvider client={new QueryClient()}>
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </>
+    
   );
 }
 
