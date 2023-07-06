@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactPlayer from "react-player/youtube";
 import youtubeSymbol from "../../assets/youtube2.svg";
+import Controls from "./Controls.jsx";
 import socket from "../../utils/socket";
 import { useParams } from "react-router-dom";
 
@@ -8,6 +9,7 @@ export default function VideoBox() {
   const [sliderTime, setSlider] = useState(0);
   const [play, setPlay] = useState(false);
   const [time, setTime] = useState(0);
+  const [volume, setVolume] = useState(0.5);
   const [duration, setDuration] = useState(0);
   const { roomID } = useParams();
   const [url, setUrl] = useState("");
@@ -24,8 +26,8 @@ export default function VideoBox() {
     const handleResize = () => {
       if (videoContainerRef.current) {
         setDimensions(() => ({
-          height: videoContainerRef.current.clientHeight * 0.9,
-          width: videoContainerRef.current.clientWidth * 0.97,
+          height: videoContainerRef.current.clientHeight * 0.85,
+          width: videoContainerRef.current.clientWidth * 0.98,
         }));
       }
     };
@@ -36,15 +38,10 @@ export default function VideoBox() {
     // Calculate the initial dimensions
     if (videoContainerRef.current) {
       setDimensions({
-        height: videoContainerRef.current.clientHeight * 0.9,
-        width: videoContainerRef.current.clientWidth * 0.97,
+        height: videoContainerRef.current.clientHeight * 0.87,
+        width: videoContainerRef.current.clientWidth * 0.98,
       });
     }
-
-    // Clean up the event listener on component unmount
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
   }, [videoContainerRef]);
 
   useEffect(() => {
@@ -108,13 +105,29 @@ export default function VideoBox() {
     setDuration(sec);
   };
 
+  const handleFullscreen = () => {
+    if (playerRef.current) {
+      if (playerRef.current.requestFullscreen) {
+        playerRef.current.requestFullscreen();
+      } else if (playerRef.current.mozRequestFullScreen) {
+        playerRef.current.mozRequestFullScreen();
+      } else if (playerRef.current.webkitRequestFullscreen) {
+        playerRef.current.webkitRequestFullscreen();
+      } else if (playerRef.current.msRequestFullscreen) {
+        playerRef.current.msRequestFullscreen();
+      }
+    }
+  }
+
   const onPlay = () => {
     console.log("VIDEO PLAY");
+    setPlay(true)
     socket.emit("video_playback", { roomID, videoState: "play" });
   };
 
   const onPause = () => {
     console.log("VIDEO PAUSE");
+    setPlay(false)
     socket.emit("video_playback", { roomID, videoState: "paused" });
   };
 
@@ -142,41 +155,35 @@ export default function VideoBox() {
   return (
     <>
       <div
-        className="h-full flex justify-center items-center flex-wrap flex-col rounded-xl bg-gray-comps gap-y-1"
+        className="h-full flex justify-center items-center flex-col rounded-xl bg-gray-comps"
         ref={videoContainerRef}
       >
         {videoID && url ? (
-          <>
-            <div id="player">
-              <ReactPlayer
-                ref={playerRef}
-                playing={play}
-                url={url}
-                controls={false}
-                width={dimensions.width}
-                height={dimensions.height}
-                onStart={onStart}
-                onPause={onPause}
-                onPlay={onPlay}
-                onProgress={handleProgress}
-                onDuration={handleDuration}
-              />
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="any"
-                value={sliderTime}
-                onChange={handleSeek}
-              />
-              <button
-                onClick={handleReset}
-                className="bg-red-main py-1.5 px-3 mt-3 border text-sm border-red-main text-white rounded-lg ease duration-150 hover:bg-red-main/80 hover:border-red-main/80"
-              >
-                ← Watch another video
-              </button>
-            </div>
-          </>
+          <div className="flex flex-col items-center gap-y-2">
+            <ReactPlayer
+              ref={playerRef}
+              playing={play}
+              volume={volume}
+              url={url}
+              controls={false}
+              width={dimensions.width}
+              height={dimensions.height}
+              onStart={onStart}
+              onPause={onPause}
+              onPlay={onPlay}
+              onProgress={handleProgress}
+              onDuration={handleDuration}
+            />
+            {/* <input
+              type="range"
+              min="0"
+              max="1"
+              step="any"
+              value={sliderTime}
+              onChange={handleSeek}
+            /> */}
+            <Controls playing={play} onPause={onPause} onPlay={onPlay} setVolume={setVolume} volume={volume} handleReset={handleReset} handleFullscreen={handleFullscreen}/>
+          </div>
         ) : (
           <>
             <img src={youtubeSymbol} className="w-36 opacity-60"></img>
