@@ -47,25 +47,15 @@ export default function VideoBox() {
   }
 
   const handleReset = (e) => {
-    setInput('')
-    setUrl('')
     setError('')
+    setUrl('')
+    if (option.value === 'Link') {
+      setInput('')
+    }
   }
 
   const handleOptionChange = (value) => {
     setOption(value)
-  }
-
-  const onStart = () => {
-    console.log("VIDEO STARTED")
-  }
-
-  const onPlay = () => {
-    console.log("VIDEO PLAYING")
-  }
-
-  const onPause = () => {
-    console.log("VIDEO PAUSED")
   }
 
   const handleSubmit = (e) => {
@@ -91,81 +81,60 @@ export default function VideoBox() {
     return false
   }
 
-  console.log(url)
+  // console.log(search)
 
   return (
-    <>
+    <div className={`h-full flex ${(option.value === "Search" && (!url)) ? "justify-start" : "justify-center"} items-center flex-wrap flex-col rounded-xl bg-gray-comps gap-y-1`} ref={videoContainerRef}>
       {/* If option is Search */}
+      {(url) ? (
+        <div id="player">
+        <ReactPlayer
+          url={url}
+          controls
+          width={dimensions.width}
+          height={dimensions.height}
+          />
+        <button onClick={handleReset} className="bg-red-main py-1.5 px-3 mt-3 border text-sm border-red-main text-white rounded-lg ease duration-150 hover:bg-red-main/80 hover:border-red-main/80">← Watch another video</button>
+        </div>
+      ) : (
+      <>
       {(option.value === "Search") && (
-        <div className="h-full flex justify-start items-center flex-wrap flex-col rounded-xl bg-gray-comps gap-y-1" ref={videoContainerRef}>
-          {(url) ? (
-            <div id="player">
-            <ReactPlayer
-              url={url}
-              controls
-              width={dimensions.width}
-              height={dimensions.height}
-              onStart={onStart}
-              onPause={onPause}
-              onPlay={onPlay}
-            />
-            <button onClick={handleReset} className="bg-red-main py-1.5 px-3 mt-3 border text-sm border-red-main text-white rounded-lg ease duration-150 hover:bg-red-main/80 hover:border-red-main/80">← Watch another video</button>
-            </div>
-          ) : (
-            <motion.div
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <YoutubeSearch
-                inputOptions={inputOptions}
-                option={option}
-                handleOptionChange={handleOptionChange}
-                input={input}
-                handleInput={handleInput}
-                handlePlayVideo={handlePlayVideo}
-                error={error}  
-              />
-            </motion.div>
-          )}
-        </div>
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <YoutubeSearch
+            inputOptions={inputOptions}
+            option={option}
+            handleOptionChange={handleOptionChange}
+            input={input}
+            handleInput={handleInput}
+            handlePlayVideo={handlePlayVideo}
+            error={error}  
+          />
+        </motion.div>
       )}
-      {(option.value === "Link") && (
-        <div className="h-full flex justify-center items-center flex-wrap flex-col rounded-xl bg-gray-comps gap-y-1" ref={videoContainerRef}>
-          {/* If Youtube URL is provided */}
-          {(url) ? (
-            <div id="player">
-            <ReactPlayer
-              url={url}
-              controls
-              width={dimensions.width}
-              height={dimensions.height}
-              onStart={onStart}
-              onPause={onPause}
-              onPlay={onPlay}
-            />
-            <button onClick={handleReset} className="bg-red-main py-1.5 px-3 mt-3 border text-sm border-red-main text-white rounded-lg ease duration-150 hover:bg-red-main/80 hover:border-red-main/80">← Watch another video</button>
-            </div>
-          ) : (
-            <motion.div
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <YoutubeLink 
-                inputOptions={inputOptions}
-                option={option}
-                handleOptionChange={handleOptionChange}
-                input={input}
-                handleInput={handleInput}
-                handleSubmit={handleSubmit}
-                error={error}
-                setError={setError}   
+        {(option.value === "Link") && (
+          <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          >
+            <YoutubeLink 
+              inputOptions={inputOptions}
+              option={option}
+              handleOptionChange={handleOptionChange}
+              input={input}
+              handleInput={handleInput}
+              handleSubmit={handleSubmit}
+              error={error}
+              setError={setError}   
               />
-            </motion.div>
-          )}
-        </div>
+          </motion.div>
+        )}
+      </>
       )}
-    </>
+    </div>
   )
 }

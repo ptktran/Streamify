@@ -21,7 +21,7 @@ export default function NavBar() {
     <>
       <div className="w-full bg-gray-comps flex justify-between items-center py-3 px-6 rounded-xl">
         <div>
-          <h1 className="text-white text-xl">📺 Streamify</h1>
+          <h1 className="text-white text-xl font-semibold select-none">📺 Streamify</h1>
         </div>
 
         <div className='flex items-center gap-2'>

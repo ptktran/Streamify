@@ -13,8 +13,8 @@ export default function YoutubeLink({
 })
 {
   return (
-    <div className="flex flex-col justify-center items-center">
-      <h1 className="text-white text-lg mb-2.5">Paste a Youtube link to start watching now!</h1>
+    <div>
+      <h1 className="text-white text-lg mb-2.5 text-center">Paste a Youtube link to start watching ▶️</h1>
       <InputBar 
         inputOptions={inputOptions}
         option={option}
