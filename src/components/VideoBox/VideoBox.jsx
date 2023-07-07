@@ -23,7 +23,7 @@ export default function VideoBox() {
     const handleResize = () => {
       if (videoContainerRef.current) {
         setDimensions(() => ({
-          height: videoContainerRef.current.clientHeight * 0.9,
+          height: videoContainerRef.current.clientHeight * 0.88,
           width: videoContainerRef.current.clientWidth * 0.97,
         }));
       }
@@ -32,7 +32,7 @@ export default function VideoBox() {
     window.addEventListener('resize', handleResize);
     if (videoContainerRef.current) {
       setDimensions({
-        height: videoContainerRef.current.clientHeight * 0.9,
+        height: videoContainerRef.current.clientHeight * 0.88,
         width: videoContainerRef.current.clientWidth * 0.97
       });
     }
@@ -112,6 +112,7 @@ export default function VideoBox() {
             handleInput={handleInput}
             handlePlayVideo={handlePlayVideo}
             error={error}  
+            setError={setError}
           />
         </motion.div>
       )}
