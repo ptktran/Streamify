@@ -13,14 +13,6 @@ export default function ChatBox({ chat, sendMessage, sender }) {
     setMessage('')
   }
 
-  // const messageIsLink = (message) => {
-  //   if (message.slice(0, 5) === 'https') {
-  //     return true
-  //   } else {
-  //     return false
-  //   }
-  // }
-
   useEffect(() => {
     scroller.current.scrollIntoView({ behavior: 'smooth' });
   }, [chat]);

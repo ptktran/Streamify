@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactPlayer from "react-player/youtube";
+import screenfull from "screenfull";
 import youtubeSymbol from "../../assets/youtube2.svg";
 import Controls from "./Controls.jsx";
 import socket from "../../utils/socket";
@@ -7,7 +8,7 @@ import { useParams } from "react-router-dom";
 
 export default function VideoBox() {
   const [sliderTime, setSlider] = useState(0);
-  const [play, setPlay] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
   const [volume, setVolume] = useState(0.5);
   const [duration, setDuration] = useState(0);
@@ -16,7 +17,7 @@ export default function VideoBox() {
   const [videoID, setVideoID] = useState("");
   const [error, setError] = useState("");
   const videoContainerRef = useRef(null);
-  const playerRef = useRef(null);
+  const playerRef = useRef();
   const [dimensions, setDimensions] = useState({
     height: 0,
     width: 0,
@@ -26,7 +27,7 @@ export default function VideoBox() {
     const handleResize = () => {
       if (videoContainerRef.current) {
         setDimensions(() => ({
-          height: videoContainerRef.current.clientHeight * 0.85,
+          height: videoContainerRef.current.clientHeight * 0.89,
           width: videoContainerRef.current.clientWidth * 0.98,
         }));
       }
@@ -38,7 +39,7 @@ export default function VideoBox() {
     // Calculate the initial dimensions
     if (videoContainerRef.current) {
       setDimensions({
-        height: videoContainerRef.current.clientHeight * 0.87,
+        height: videoContainerRef.current.clientHeight * 0.89,
         width: videoContainerRef.current.clientWidth * 0.98,
       });
     }
@@ -49,11 +50,7 @@ export default function VideoBox() {
       console.log(videoState, "recieve");
       if (!videoState) throw new Error("no video State");
 
-      if (videoState === "play") {
-        setPlay(true);
-      } else {
-        setPlay(false);
-      }
+      setPlaying(playing)
     }
 
     function onReceiveVideoLinkEvent(videoURL) {
@@ -70,7 +67,7 @@ export default function VideoBox() {
     socket.on("video_state", onReceiveVideoStateEvent);
     socket.on("video_link", onReceiveVideoLinkEvent);
     socket.on("reset_player", onResetPlayerEvent);
-  }, [play, url]);
+  }, [playing, url]);
 
   const handleInput = (e) => {
     const videoURL = e.target.value;
@@ -85,7 +82,7 @@ export default function VideoBox() {
   };
 
   const onStart = () => {
-    //console.log("VIDEO STARTED");
+    console.log("VIDEO STARTED");
   };
 
   const handleProgress = (data) => {
@@ -98,7 +95,7 @@ export default function VideoBox() {
       playerRef.current.seekTo(e.target.value * duration);
       setSlider(e.target.value);
     }
-    setPlay(true);
+    setPlaying(true);
   };
 
   const handleDuration = (sec) => {
@@ -107,27 +104,23 @@ export default function VideoBox() {
 
   const handleFullscreen = () => {
     if (playerRef.current) {
-      if (playerRef.current.requestFullscreen) {
-        playerRef.current.requestFullscreen();
-      } else if (playerRef.current.mozRequestFullScreen) {
-        playerRef.current.mozRequestFullScreen();
-      } else if (playerRef.current.webkitRequestFullscreen) {
-        playerRef.current.webkitRequestFullscreen();
-      } else if (playerRef.current.msRequestFullscreen) {
-        playerRef.current.msRequestFullscreen();
+      if (screenfull.isFullscreen) {
+        screenfull.exit()
+      } else {
+        screenfull.request(videoContainerRef.current)
       }
     }
   }
 
   const onPlay = () => {
     console.log("VIDEO PLAY");
-    setPlay(true)
+    setPlaying(true)
     socket.emit("video_playback", { roomID, videoState: "play" });
   };
 
   const onPause = () => {
     console.log("VIDEO PAUSE");
-    setPlay(false)
+    setPlaying(false)
     socket.emit("video_playback", { roomID, videoState: "paused" });
   };
 
@@ -151,18 +144,36 @@ export default function VideoBox() {
     }
     return false;
   }
+  const handleKeyDown = (e) => {
+    switch (e.key) {
+      case "k":
+      case " ":
+        setPlaying(!playing)
+        break
+      case "m":
+      case "M":
+        setVolume(volume === 0 ? 0.5 : 0)
+        break
+      case "f": 
+      case "F":
+        handleFullscreen()
+        break
+    }
+  }
 
   return (
     <>
       <div
         className="h-full flex justify-center items-center flex-col rounded-xl bg-gray-comps"
         ref={videoContainerRef}
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
       >
         {videoID && url ? (
           <div className="flex flex-col items-center gap-y-2">
             <ReactPlayer
               ref={playerRef}
-              playing={play}
+              playing={playing}
               volume={volume}
               url={url}
               controls={false}
@@ -173,6 +184,7 @@ export default function VideoBox() {
               onPlay={onPlay}
               onProgress={handleProgress}
               onDuration={handleDuration}
+              onEnded={() => setPlaying(false)}
             />
             {/* <input
               type="range"
@@ -182,7 +194,21 @@ export default function VideoBox() {
               value={sliderTime}
               onChange={handleSeek}
             /> */}
-            <Controls playing={play} onPause={onPause} onPlay={onPlay} setVolume={setVolume} volume={volume} handleReset={handleReset} handleFullscreen={handleFullscreen}/>
+            <Controls 
+              playing={playing} 
+              onPause={onPause} 
+              onPlay={onPlay} 
+              setVolume={setVolume} 
+              volume={volume} 
+              handleReset={handleReset} 
+              handleFullscreen={handleFullscreen}
+              time={time}  
+              setTime={setTime}
+              duration={duration} 
+              setDuration={setDuration}
+              playerRef={playerRef}
+              setPlay={setPlaying}
+            />
           </div>
         ) : (
           <>
