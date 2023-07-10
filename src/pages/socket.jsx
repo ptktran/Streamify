@@ -72,7 +72,7 @@ export default function Socket() {
   // };
 
   return (
-    <ChatBox chat={chat} sendMessage={sendMessage} sender={name}/>
+    <ChatBox chat={chat} sendMessage={sendMessage} sender={name} isLoading={isLoading}/>
     // <div className="flex justify-center items-center">
     //   <h1>Currently in room {roomID}</h1>
     //   <input
