@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Tooltip } from 'react-tooltip'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
+import emojisymbol from '../../assets/emoji.svg'
 
 export default function ChatBox({ chat, sendMessage, sender }) {
   const [ message, setMessage ] = useState('')
@@ -51,38 +51,38 @@ export default function ChatBox({ chat, sendMessage, sender }) {
         
         <section className="h-[87%] overflow-y-auto scrollbar-thin scrollbar-track-gray-dark">
           <div className="text-sm text-gray-text p-5">
-          {chat && 
+          {chat &&
               chat.map((value, index) => (
                 <motion.div
                   initial={{ y: 5, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.15 }}
                 >
-                  <div key={index}>
-                    {value.sender === sender ? (
-                      <div className="w-full flex items-end flex-col text-left mb-3 gap-y-1">
-                        <p className="text-gray-text font-semibold text-xs">{value.sender}</p>
-                          {messageIsImage(value.message) ? (
-                            <img src={value.message} className="w-3/4 rounded-lg"/>
-                          ) : (
-                            <div className="text-sm rounded-2xl rounded-tr-none bg-gray-bg text-white max-w-[80%] py-2 px-3 break-words">
-                              {value.message}
-                            </div>
-                          )}
-                      </div>
-                    ) : (
-                      <div className="w-full flex items-start flex-col text-left mb-3 gap-y-1">
-                        <p className="text-gray-text font-semibold text-xs">{value.sender}</p>
+                <div key={index}>
+                  {value.sender === sender ? (
+                    <div className="w-full flex items-end flex-col text-left mb-3 gap-y-1">
+                      <p className="text-gray-text font-semibold text-xs">{value.sender}</p>
                         {messageIsImage(value.message) ? (
                           <img src={value.message} className="w-3/4 rounded-lg"/>
                         ) : (
-                          <div className="text-sm rounded-2xl rounded-tl-none bg-gray-bg text-white max-w-[80%] py-2 px-3 break-words">
+                          <div className="text-sm rounded-2xl rounded-tr-none bg-gray-bg text-white max-w-[80%] py-2 px-3 break-words">
                             {value.message}
                           </div>
                         )}
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <div className="w-full flex items-start flex-col text-left mb-3 gap-y-1">
+                      <p className="text-gray-text font-semibold text-xs">{value.sender}</p>
+                      {messageIsImage(value.message) ? (
+                        <img src={value.message} className="w-3/4 rounded-lg"/>
+                      ) : (
+                        <div className="text-sm rounded-2xl rounded-tl-none bg-gray-bg text-white max-w-[80%] py-2 px-3 break-words">
+                          {value.message}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 </motion.div>
               ))}
             <div ref={scroller}></div>
@@ -98,12 +98,14 @@ export default function ChatBox({ chat, sendMessage, sender }) {
                 type="text"
                 value={message}
                 onChange={handleInput}
-                onFocus={() => setInputFocused(true)}
+                onFocus={() => {setInputFocused(true); emojiClick && setEmojiClick(false)}}
                 onBlur={() => setInputFocused(false)}
               />
               <button 
                 type="button" onClick={() => {setEmojiClick(!emojiClick)}} 
-                className={`bg-gray-dark px-1.5 py-2 border border-gray-dark ease duration-150 ${inputFocused && 'border-t-gray-bg border-b-gray-bg'} emojiButton`}>👋</button>
+                className={`bg-gray-dark px-1.5 py-2 border border-gray-dark ease duration-150 ${inputFocused && 'border-t-gray-bg border-b-gray-bg'} emojiButton`}>
+                  <img src={emojisymbol} className={`w-[27px] opacity-50 ${emojiClick && 'opacity-100'}`}/>
+                </button>
               {(!message || message.trim().length === 0) ? (
                 <button disabled type="submit" className="bg-gray-bg px-2.5 py-2 text-lg border border-gray-bg text-gray-text rounded-lg rounded-s-none">→</button> 
                 ) : (
