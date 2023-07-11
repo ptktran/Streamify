@@ -40,12 +40,17 @@ export default function Controls({playing, setPlay, onPause, onPlay, volume, set
   return(
     
   <div className="w-full flex-col flex gap-y-2">
-    <div onMouseEnter={() => setSeekBarHover(true)} onMouseLeave={() => setSeekBarHover(false)} className="h-2.5 flex items-center" id="timeline-container">
-      <div onClick={handleTimelineClick} className="h-1 w-full bg-gray-text/50 hover:bg-gray-text/80 hover:h-full hover:cursor-pointer ease duration-150 relative flex items-center" id="timeline">
+    <div className="h-2.5 flex items-center" id="timeline-container">
+      <div 
+        onMouseEnter={() => setSeekBarHover(true)} onMouseLeave={() => setSeekBarHover(false)} onClick={handleTimelineClick} 
+        className="h-1 w-full bg-gray-text/50 hover:bg-gray-text/80 hover:h-full hover:cursor-pointer ease duration-150 relative flex items-center" id="timeline">
         <div className="bg-red-main h-full ease duration-100 relative" style={{ width: getProgressWidth() }}></div>
         <div
-          className={`absolute ${seekBarHover && 'h-4 w-4 transform translate-x-[-0.4rem] opacity-100'} opacity-0 bg-red-main border border-red-main transition-opacity duration-150 rounded-full`}
-          style={{ left: getProgressWidth() }}
+          className={`absolute ${seekBarHover && 'h-4 w-4 transform translate-x-[-0.4rem] opacity-100'} opacity-0 bg-red-main border border-red-main rounded-full`}
+          style={{ 
+            left: getProgressWidth(),
+            transition: 'left 0.1s ease, opacity 0.1s ease'
+          }}
         ></div>
       </div>
     </div>

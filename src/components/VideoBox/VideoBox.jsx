@@ -27,23 +27,27 @@ export default function VideoBox() {
     const handleResize = () => {
       if (videoContainerRef.current) {
         setDimensions(() => ({
-          height: videoContainerRef.current.clientHeight * 0.89,
+          height: videoContainerRef.current.clientHeight * 0.85,
           width: videoContainerRef.current.clientWidth * 0.98,
         }));
       }
     };
-
-    // Attach the resize event listener
+  
     window.addEventListener("resize", handleResize);
-
-    // Calculate the initial dimensions
+  
+    // Calculate the initial dimensions only once when the component mounts
     if (videoContainerRef.current) {
       setDimensions({
         height: videoContainerRef.current.clientHeight * 0.89,
         width: videoContainerRef.current.clientWidth * 0.98,
       });
     }
-  }, [videoContainerRef]);
+  
+    // Clean up the resize event listener
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [videoContainerRef])
 
   useEffect(() => {
     function onReceiveVideoStateEvent(videoState) {
@@ -104,11 +108,7 @@ export default function VideoBox() {
 
   const handleFullscreen = () => {
     if (playerRef.current) {
-      if (screenfull.isFullscreen) {
-        screenfull.exit()
-      } else {
-        screenfull.request(videoContainerRef.current)
-      }
+      screenfull.toggle(playerRef.current.wrapper)
     }
   }
 
@@ -144,6 +144,7 @@ export default function VideoBox() {
     }
     return false;
   }
+
   const handleKeyDown = (e) => {
     switch (e.key) {
       case "k":
@@ -157,6 +158,23 @@ export default function VideoBox() {
       case "f": 
       case "F":
         handleFullscreen()
+        break
+      case "ArrowRight":
+        playerRef.current.seekTo(time + 5)
+        setTime(time + 5)
+        break
+      case "ArrowLeft":
+        if (time < 5) {
+          playerRef.current.seekTo(0)
+          setTime(0)
+        } else {
+          playerRef.current.seekTo(time - 5)
+          setTime(time - 5)
+        }
+        break
+      case "0":
+        playerRef.current.seekTo(0)
+        setTime(0)
         break
     }
   }
