@@ -17,12 +17,13 @@ export default function VideoBox() {
   const [videoID, setVideoID] = useState("");
   const [error, setError] = useState("");
   const videoContainerRef = useRef(null);
-  const playerRef = useRef();
+  const playerRef = useRef(null);
   const [dimensions, setDimensions] = useState({
     height: 0,
     width: 0,
   });
 
+  // side effect for resizing window
   useEffect(() => {
     const handleResize = () => {
       if (videoContainerRef.current) {
@@ -32,9 +33,9 @@ export default function VideoBox() {
         }));
       }
     };
-  
+
     window.addEventListener("resize", handleResize);
-  
+
     // Calculate the initial dimensions only once when the component mounts
     if (videoContainerRef.current) {
       setDimensions({
@@ -42,44 +43,68 @@ export default function VideoBox() {
         width: videoContainerRef.current.clientWidth * 0.98,
       });
     }
-  
+
     // Clean up the resize event listener
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [videoContainerRef])
+  }, [videoContainerRef]);
 
+  // side effect for incoming socket calls
   useEffect(() => {
     function onReceiveVideoStateEvent(videoState) {
-      console.log(videoState, "recieve");
       if (!videoState) throw new Error("no video State");
 
-      setPlaying(playing)
-    }
+      if (videoState === "play") {
+        setPlaying(true);
+      }
 
-    function onReceiveVideoLinkEvent(videoURL) {
-      if (!videoURL) throw new Error("no video Link");
-      setVideoID(validateUrl(videoURL));
-      setUrl(videoURL);
+      if (videoState === "pause") {
+        setPlaying(false);
+      }
     }
 
     function onResetPlayerEvent() {
-      handleReset();
+      setUrl("");
+      setVideoID("");
+      setError("");
     }
 
-    socket.on("receive_link", onReceiveVideoLinkEvent);
-    socket.on("video_state", onReceiveVideoStateEvent);
-    socket.on("video_link", onReceiveVideoLinkEvent);
-    socket.on("reset_player", onResetPlayerEvent);
-  }, [playing, url]);
+    function onVideTimeChangeEvent(newTime) {
+      if (!newTime) throw new Error("no time provided");
+      playerRef.current.seekTo(newTime);
+      setTime(newTime);
+    }
 
+    function onReceiveVideoInformation(link, state, time) {
+      try {
+        setVideoID(validateUrl(link));
+        setUrl(link);
+        setTime(time);
+
+        if (state === "play") setPlaying(true);
+
+        if (state === "pause") setPlaying(false);
+      } catch (e) {
+        console.log(e.message);
+      }
+    }
+
+    socket.on("video_information", onReceiveVideoInformation);
+    socket.on("reset", onResetPlayerEvent);
+    socket.on("new_video_time", onVideTimeChangeEvent);
+    socket.on("video_state", onReceiveVideoStateEvent);
+  }, [playing, url, time]);
+
+  // setting video url
   const handleInput = (e) => {
     const videoURL = e.target.value;
     setUrl(videoURL);
   };
 
+  // reset video url
   const handleReset = () => {
-    socket.emit("reset", roomID);
+    socket.emit("reset_video", roomID);
     setUrl("");
     setVideoID("");
     setError("");
@@ -89,46 +114,41 @@ export default function VideoBox() {
     console.log("VIDEO STARTED");
   };
 
+  // current video time
   const handleProgress = (data) => {
     const currentTime = data.playedSeconds;
+    socket.emit("client_time_stream", { roomID, time: currentTime });
     setTime(currentTime);
   };
 
-  const handleSeek = (e) => {
-    if (playerRef.current) {
-      playerRef.current.seekTo(e.target.value * duration);
-      setSlider(e.target.value);
-    }
-    setPlaying(true);
-  };
-
+  // fires wehn video is set
   const handleDuration = (sec) => {
+    console.log(sec, "duration");
     setDuration(sec);
   };
 
+  // full screen
   const handleFullscreen = () => {
     if (playerRef.current) {
-      screenfull.toggle(playerRef.current.wrapper)
+      screenfull.toggle(playerRef.current.wrapper);
     }
-  }
+  };
 
   const onPlay = () => {
-    console.log("VIDEO PLAY");
-    setPlaying(true)
-    socket.emit("video_playback", { roomID, videoState: "play" });
+    setPlaying(true);
+    socket.emit("video_playback", roomID, "play");
   };
 
   const onPause = () => {
-    console.log("VIDEO PAUSE");
-    setPlaying(false)
-    socket.emit("video_playback", { roomID, videoState: "paused" });
+    setPlaying(false);
+    socket.emit("video_playback", roomID, "pause");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateUrl(url)) {
       setVideoID(validateUrl(url));
-      socket.emit("set_video", { roomID, videoURL: url });
+      socket.emit("set_video", roomID, { url, duration });
     } else {
       setError("Invalid Youtube URL");
     }
@@ -149,35 +169,35 @@ export default function VideoBox() {
     switch (e.key) {
       case "k":
       case " ":
-        setPlaying(!playing)
-        break
+        setPlaying(!playing);
+        break;
       case "m":
       case "M":
-        setVolume(volume === 0 ? 0.5 : 0)
-        break
-      case "f": 
+        setVolume(volume === 0 ? 0.5 : 0);
+        break;
+      case "f":
       case "F":
-        handleFullscreen()
-        break
+        handleFullscreen();
+        break;
       case "ArrowRight":
-        playerRef.current.seekTo(time + 5)
-        setTime(time + 5)
-        break
+        playerRef.current.seekTo(time + 5);
+        setTime(time + 5);
+        break;
       case "ArrowLeft":
         if (time < 5) {
-          playerRef.current.seekTo(0)
-          setTime(0)
+          playerRef.current.seekTo(0);
+          setTime(0);
         } else {
-          playerRef.current.seekTo(time - 5)
-          setTime(time - 5)
+          playerRef.current.seekTo(time - 5);
+          setTime(time - 5);
         }
-        break
+        break;
       case "0":
-        playerRef.current.seekTo(0)
-        setTime(0)
-        break
+        playerRef.current.seekTo(0);
+        setTime(0);
+        break;
     }
-  }
+  };
 
   return (
     <>
@@ -204,25 +224,17 @@ export default function VideoBox() {
               onDuration={handleDuration}
               onEnded={() => setPlaying(false)}
             />
-            {/* <input
-              type="range"
-              min="0"
-              max="1"
-              step="any"
-              value={sliderTime}
-              onChange={handleSeek}
-            /> */}
-            <Controls 
-              playing={playing} 
-              onPause={onPause} 
-              onPlay={onPlay} 
-              setVolume={setVolume} 
-              volume={volume} 
-              handleReset={handleReset} 
+            <Controls
+              playing={playing}
+              onPause={onPause}
+              onPlay={onPlay}
+              setVolume={setVolume}
+              volume={volume}
+              handleReset={handleReset}
               handleFullscreen={handleFullscreen}
-              time={time}  
+              time={time}
               setTime={setTime}
-              duration={duration} 
+              duration={duration}
               setDuration={setDuration}
               playerRef={playerRef}
               setPlay={setPlaying}
