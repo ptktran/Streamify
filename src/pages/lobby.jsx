@@ -2,6 +2,7 @@ import axios from "axios";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import LobbyForm from "../components/forms/lobbyForm";
+import Error from "./Error"
 
 export default function LobbyPage() {
   const navigate = useNavigate();
@@ -29,6 +30,12 @@ export default function LobbyPage() {
       navigate(`/Room/${partyLink}`);
     } catch (e) {}
   };
+
+  if (window.innerWidth < 700) {
+    return (
+      <Error errorMsg={`Streamify is not supported on mobile devices yet...`} errorCode={`418 :(`}/>
+    )
+  }
   return (
     <section className="w-screen h-screen bg-gray-bg flex justify-center items-center">
       <main className="bg-gray-comps rounded-lg">

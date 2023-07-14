@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import { motion } from "framer-motion"
 import play from "../../assets/play.svg"
 import pause from "../../assets/pause.svg"
@@ -11,11 +11,11 @@ import Time from './Time'
 export default function Controls({playing, setPlay, onPause, onPlay, volume, setVolume, handleReset, handleFullscreen, time, setTime, duration, setDuration, playerRef}) {
   const [volumeHover, setVolumeHover] = useState(false)
   const [seekBarHover, setSeekBarHover] = useState(false)
-
+  
   const handleVolumeChange = (e) => {
     setVolume(parseFloat(e.target.value))
   }
-
+  
   const getProgressWidth = () => {
     if (playerRef.current) {
       const progress = (time / duration) * 100
