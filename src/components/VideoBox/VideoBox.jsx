@@ -47,7 +47,7 @@ export default function VideoBox() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [videoContainerRef])
+  }, [videoContainerRef ])
 
   useEffect(() => {
     function onReceiveVideoStateEvent(videoState) {
