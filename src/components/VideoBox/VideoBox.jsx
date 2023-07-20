@@ -91,6 +91,11 @@ export default function VideoBox() {
         <ReactPlayer
           url={url}
           controls
+          config={{
+            youtube: {
+              playerVars: {autoplay: 1}
+            },
+          }}
           width={dimensions.width}
           height={dimensions.height}
           />

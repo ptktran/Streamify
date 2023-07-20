@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useSessionStore } from "../../utils/store"
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import emojisymbol from '../../assets/emoji.svg'
@@ -8,7 +9,13 @@ export default function ChatBox({ chat, sendMessage, sender }) {
   const [ message, setMessage ] = useState('')
   const [ emojiClick, setEmojiClick ] = useState(false)
   const [ inputFocused, setInputFocused ] = useState(false)
+  const inputRef = useRef(null)
+  const [ name, setName ] = useState("") 
   const scroller = useRef()
+  const { Name } = useSessionStore()
+  useEffect(() => {
+    setName(Name)
+  }, [Name])
 
   const handleInput = (e) => {
     setMessage(e.target.value)
@@ -23,6 +30,7 @@ export default function ChatBox({ chat, sendMessage, sender }) {
   const onEmojiSelect = (e) => {
     setMessage(message + e.native)
     setEmojiClick(false)
+    inputRef.current.focus()
   }
 
   const messageIsImage = (message) => {
@@ -42,7 +50,7 @@ export default function ChatBox({ chat, sendMessage, sender }) {
         <section className="h-[6%]">
           <div className="flex justify-between items-center p-4 bg-gray-dark rounded-t-xl">
             <h1 className="text-white font-semibold text-md">🎉 Your Party</h1>
-            <p className="text-gray-text text-xs"></p>
+            <p className="text-gray-text text-xs">{name}</p>
           </div> 
           {/* <div className="text-gray-text text-xs rounded-xl bg-gray-bg m-auto my-3 px-3 py-1 w-fit">
             <h1>👑 jackie has control over party actions</h1>
@@ -100,6 +108,7 @@ export default function ChatBox({ chat, sendMessage, sender }) {
                 onChange={handleInput}
                 onFocus={() => {setInputFocused(true); emojiClick && setEmojiClick(false)}}
                 onBlur={() => setInputFocused(false)}
+                ref={inputRef}
               />
               <button 
                 type="button" onClick={() => {setEmojiClick(!emojiClick)}} 
