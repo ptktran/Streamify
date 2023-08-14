@@ -3,7 +3,7 @@ import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import LobbyForm from "../components/forms/lobbyForm";
 
-export default function LobbyPage() {
+export default function Connect() {
   const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: () => {

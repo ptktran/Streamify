@@ -8,13 +8,12 @@ import { useParams } from "react-router-dom";
 
 export default function VideoBox() {
   const [sliderTime, setSlider] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(true);
   const [time, setTime] = useState(0);
   const [volume, setVolume] = useState(0.5);
   const [duration, setDuration] = useState(0);
   const { roomID } = useParams();
   const [url, setUrl] = useState("");
-  const [videoID, setVideoID] = useState("");
   const [error, setError] = useState("");
   const videoContainerRef = useRef(null);
   const playerRef = useRef(null);
@@ -66,25 +65,22 @@ export default function VideoBox() {
 
     function onResetPlayerEvent() {
       setUrl("");
-      setVideoID("");
       setError("");
     }
 
     function onVideTimeChangeEvent(newTime) {
+      console.log("fire");
+      console.log(playerRef.current);
+      console.log("hello");
       if (!newTime) throw new Error("no time provided");
       playerRef.current.seekTo(newTime);
       setTime(newTime);
     }
 
-    function onReceiveVideoInformation(link, state, time) {
+    function onReceiveVideoInformation(link) {
       try {
-        setVideoID(validateUrl(link));
-        setUrl(link);
-        setTime(time);
-
-        if (state === "play") setPlaying(true);
-
-        if (state === "pause") setPlaying(false);
+        setUrl(link.url);
+        console.log(link);
       } catch (e) {
         console.log(e.message);
       }
@@ -92,21 +88,21 @@ export default function VideoBox() {
 
     socket.on("video_information", onReceiveVideoInformation);
     socket.on("reset", onResetPlayerEvent);
-    socket.on("new_video_time", onVideTimeChangeEvent);
+    socket.on("new_video_time", onVideTimeChangeEvent); // this one stops working
     socket.on("video_state", onReceiveVideoStateEvent);
-  }, [playing, url, time]);
 
-  // setting video url
-  const handleInput = (e) => {
-    const videoURL = e.target.value;
-    setUrl(videoURL);
-  };
+    return () => {
+      socket.off("video_information", onReceiveVideoInformation);
+      socket.off("reset", onResetPlayerEvent);
+      socket.off("new_video_time", onVideTimeChangeEvent); // this one stops working
+      socket.off("video_state", onReceiveVideoStateEvent);
+    };
+  }, [playerRef]);
 
   // reset video url
   const handleReset = () => {
     socket.emit("reset_video", roomID);
     setUrl("");
-    setVideoID("");
     setError("");
   };
 
@@ -123,7 +119,6 @@ export default function VideoBox() {
 
   // fires wehn video is set
   const handleDuration = (sec) => {
-    console.log(sec, "duration");
     setDuration(sec);
   };
 
@@ -146,8 +141,9 @@ export default function VideoBox() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const url = e.target.elements.url.value;
     if (validateUrl(url)) {
-      setVideoID(validateUrl(url));
+      setUrl(url);
       socket.emit("set_video", roomID, { url, duration });
     } else {
       setError("Invalid Youtube URL");
@@ -207,7 +203,7 @@ export default function VideoBox() {
         onKeyDown={handleKeyDown}
         tabIndex={-1}
       >
-        {videoID && url ? (
+        {url ? (
           <div className="flex flex-col items-center gap-y-2">
             <ReactPlayer
               ref={playerRef}
@@ -236,7 +232,7 @@ export default function VideoBox() {
               setTime={setTime}
               duration={duration}
               setDuration={setDuration}
-              playerRef={playerRef}
+              ref={playerRef}
               setPlay={setPlaying}
             />
           </div>
@@ -253,8 +249,6 @@ export default function VideoBox() {
                     className="bg-gray-dark border border-red-main text-gray-text rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-bg w-[26rem] p-2.5 focus:outline-none"
                     placeholder="Link here..."
                     type="text"
-                    value={url}
-                    onChange={handleInput}
                   />
                   <button
                     type="submit"
@@ -270,8 +264,7 @@ export default function VideoBox() {
                     className="bg-gray-dark border border-gray-dark text-gray-text rounded-lg rounded-e-none border-r-0 transition-colors ease duration-150 focus:border-gray-bg w-[26rem] p-2.5 focus:outline-none"
                     placeholder="Link here..."
                     type="text"
-                    value={url}
-                    onChange={handleInput}
+                    name="url"
                   />
                   <button
                     type="submit"

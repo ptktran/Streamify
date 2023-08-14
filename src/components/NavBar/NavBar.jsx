@@ -65,7 +65,7 @@ export default function NavBar() {
           </div>
 
           <div>
-            <Link to="/Lobby">
+            <Link to="/Connect">
               <button
                 type="submit"
                 className="bg-red-main px-2.5 py-2 text-sm border border-red-main text-white rounded-lg duration-150 hover:bg-red-main/80 hover:border-red-main/80"
