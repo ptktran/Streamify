@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { debounce, parseUrl } from "./utils/youtube-search"
+import { debounce, parseUrl } from "../../../utils/youtube-search"
 import { motion } from 'framer-motion'
 import InputBar from './InputBar'
-import Loader from "../../components/Loader/Loader"
+// import Loader from "../../components/Loader/Loader"
 
 export default function YoutubeSearch({
   inputOptions,
@@ -108,7 +108,7 @@ export default function YoutubeSearch({
           transition={{ duration: 0.15 }}
           className="flex justify-center"
         >
-          <Loader />
+          {/* <Loader /> */}
         </motion.div>
       )}
       {error && (
